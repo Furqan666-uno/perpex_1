@@ -49,10 +49,7 @@ class PaymentView(APIView):
         
         serializer= PaymentSerializer(data=request.data)
         if serializer.is_valid():
-            order= serializer.validated_data["order"]
-            if order.user != request.user:
-                return Response({'error':'Only cashier can take payments'}, status=403)
-            serializer.save()
+            serializer.save() # chashier to process payment order  
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
     
@@ -74,5 +71,29 @@ class MenuItemView(APIView):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+    
+
+# to show transition from pending -> prepaired -> served instead of directly jumping to served 
+class OrderStatusChangeView(APIView):
+    permission_classes= [IsAuthenticated, IsManager_Or_IsAdmin]
+
+    allowed_transitions= {"Pending":"Preparing", "Preparing":"Served"}
+
+    def patch(self, request, pk):
+        try:
+            order= Order.objects.get(pk=pk)
+        except Order.DoesNotExist:
+            return Response({"error":"Order not found."}, status=404)
+        
+        status_change= request.data.get("status")
+        if not status_change:
+            return Response({"error":"Status required."}, status=400)
+        
+        curr_status= order.status
+        if status_change != self.allowed_transitions.get(curr_status):
+            return Response({"error": f"Invalid transition of status"}, status=400)
+        order.status = status_change
+        order.save()
+        return Response({"message": f"Order status updated to {status_change}"})
 
     

@@ -15,9 +15,15 @@ class User(AbstractUser):
     
 
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Preparing", "Preparing"),
+        ("Served", "Served"),
+    ]
     user= models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
     product_name= models.CharField(max_length=100)
     amount= models.DecimalField(max_digits=5, decimal_places=2)
+    status= models.CharField(max_length=50, choices=STATUS_CHOICES, default="Pending")
     created_at= models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -32,7 +38,7 @@ class Payment(models.Model):
     )
     order= models.ForeignKey(Order, on_delete=models.CASCADE, related_name='payments')
     amount= models.DecimalField(max_digits=5, decimal_places=2)
-    status= models.CharField(choices=ORDER_STATUS, default="Pending")
+    status= models.CharField(max_length=20, choices=ORDER_STATUS, default="Pending")
     created_at= models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

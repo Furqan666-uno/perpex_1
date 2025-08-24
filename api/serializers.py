@@ -34,7 +34,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class MenuItemSerializer(serializers.ModelSerializer):
-    category= CategorySerializer(read_only=True)
+    category= serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
 
     class Meta:
         model= MenuItem

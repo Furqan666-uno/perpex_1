@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model # we need this to get AbstractUser from models.py
-from .models import Order, Payment
+from .models import Order, Payment, Category, MenuItem
 User= get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -27,3 +27,15 @@ class PaymentSerializer(serializers.ModelSerializer):
         fields = ["id", "order", "amount", "status", "created_at"]
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model= Category
+        fields= ['id', 'name']
+
+
+class MenuItemSerializer(serializers.ModelSerializer):
+    category= CategorySerializer(read_only=True)
+
+    class Meta:
+        model= MenuItem
+        fields= ['id', 'name', 'price', 'category']

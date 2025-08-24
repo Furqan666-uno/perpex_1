@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .serializers import UserRegistrationSerializer, OrderSerializer, PaymentSerializer
-from .models import Order, Payment, User
+from .serializers import UserRegistrationSerializer, OrderSerializer, PaymentSerializer, MenuItemSerializer
+from .models import Order, Payment, User, MenuItem, Category
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import ListAPIView
 User= get_user_model()
 
 
@@ -23,7 +24,7 @@ class OrderView(APIView):
         return Response(serializer.data) # shows all order of this user
         
     def post(self, request):
-        serializer = OrderSerializer(data=request.data)
+        serializer= OrderSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status=201)
@@ -34,17 +35,21 @@ class PaymentView(APIView):
     permission_classes= [IsAuthenticated]
 
     def get(self, request):
-        payments = Payment.objects.filter(order__user=request.user)
-        serializer = PaymentSerializer(payments, many=True)
+        payments= Payment.objects.filter(order__user=request.user)
+        serializer= PaymentSerializer(payments, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = PaymentSerializer(data=request.data)
+        serializer= PaymentSerializer(data=request.data)
         if serializer.is_valid():
-            order = serializer.validated_data["order"]
+            order= serializer.validated_data["order"]
             if order.user != request.user:
                 return Response({"error": "You can only pay for your own orders"}, status=403)
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
     
+
+class MenuItemView(ListAPIView):
+    queryset= MenuItem.objects.select_related('category').all() # selected_related= more efficient than simple .all()
+    serializer_class= MenuItemSerializer 

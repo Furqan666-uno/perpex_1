@@ -2,4 +2,4 @@
 
 - Terminal_1-> py manage.py runserver
 - Terminal_2-> celery -A backend beat -l info
-- Terminal_3-> celery -A backend worker -l info --pool=solo (using solo is recommended for windows, but for linux or mac, you don't need --polo=solo
+- Terminal_3-> celery -A backend worker -l info --pool=solo (using solo is recommended for windows, but for linux or mac, you don't need '--polo=solo')

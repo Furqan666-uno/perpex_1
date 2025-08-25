@@ -1,4 +1,4 @@
-# NOTE: For this project we are using celery and celery beats, so we will be three terminals running for this project 
+# NOTE: For this project we are using celery and celery beats, so we will be running three terminals at the same time for this project 
 
 - Terminal_1-> py manage.py runserver
 - Terminal_1-> celery -A backend beat -l info

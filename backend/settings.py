@@ -140,7 +140,7 @@ CELERY_BROKER_URL = "redis://localhost:6379/0"
 CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 CELERY_BEAT_SCHEDULE = {
     "generate-sales-report-nightly": {
-        "task": "app.tasks.generate_sales_report",
+        "task": "api.tasks.generate_sales_report",
         "schedule": crontab(hour=23, minute=59),  # Run daily at 11:59 PM
     },
 }
